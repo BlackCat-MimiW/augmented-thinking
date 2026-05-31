@@ -6,8 +6,8 @@ export const SITE = {
   name: 'Augmented Thinking',
   tagline: 'AI 工具自學與觀察筆記（2026版）',
   description: '用清晰的語言拆解 AI 工具、商業思維與社會觀察。台灣觀點，2026。',
-  base: '/augmented-thinking',
-  url: 'https://YOUR_USERNAME.github.io/augmented-thinking',
+base: '',
+url: 'https://tourmaline-cucurucho-1e33df.netlify.app',
 };
 
 // ─── 分類設定（新增/刪除/改名只需改這裡）───
