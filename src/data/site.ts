@@ -6,8 +6,8 @@ export const SITE = {
   name: 'Augmented Thinking',
   tagline: 'AI 工具自學與觀察筆記（2026版）',
   description: '用清晰的語言拆解 AI 工具、商業思維與社會觀察。台灣觀點，2026。',
-base: '',
-url: 'https://tourmaline-cucurucho-1e33df.netlify.app',
+  base: '',
+  url: 'https://tourmaline-cucurucho-1e33df.netlify.app',
 };
 
 // ─── 分類設定（新增/刪除/改名只需改這裡）───
@@ -23,11 +23,11 @@ export const CATEGORIES: Category[] = [
 
 // ─── 社群連結（填入你的實際網址）───
 export const SOCIAL = [
-  { platform: 'LinkedIn',  href: 'https://linkedin.com/in/YOUR_ID',    icon: 'linkedin' },
-  { platform: 'Instagram', href: 'https://instagram.com/YOUR_ID',      icon: 'instagram' },
-  { platform: 'Facebook',  href: 'https://facebook.com/YOUR_ID',       icon: 'facebook' },
-  { platform: 'YouTube',   href: 'https://youtube.com/@YOUR_ID',       icon: 'youtube' },
-  { platform: 'Threads',   href: 'https://threads.net/@YOUR_ID',       icon: 'threads' },
+  { platform: 'LinkedIn',  href: 'https://linkedin.com/in/pin-jhen-maggie-wang',    icon: 'linkedin' },
+  { platform: 'Instagram', href: 'https://instagram.com/pinjhen',      icon: 'instagram' },
+  { platform: 'Facebook',  href: 'https://facebook.com/mimi.wang.1107',       icon: 'facebook' },
+  { platform: 'YouTube',   href: 'https://youtube.com/@maggiecat',       icon: 'youtube' },
+  { platform: 'Threads',   href: 'https://threads.net/@pinjhen',       icon: 'threads' },
 ];
 
 // ─── 訂閱表單（填入你的 Google 表單嵌入連結）───
