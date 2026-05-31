@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../data/site';
+---
+
+<BaseLayout title={`頁面不存在 — ${SITE.name}`}>
+  <div style="max-width:42rem; margin:0 auto; padding:8rem 1.5rem; text-align:center;">
+    <div style="font-family:'Playfair Display',serif; font-size:6rem; font-weight:700; color:var(--border); line-height:1; margin-bottom:1.5rem;">
+      404
+    </div>
+    <h1 style="font-family:'Playfair Display',serif; font-size:1.75rem; font-weight:700; color:var(--ink); margin:0 0 1rem;">
+      找不到這個頁面
+    </h1>
+    <p style="color:var(--muted); font-size:.95rem; margin:0 0 2.5rem;">
+      這個頁面可能已被移除，或者你輸入了錯誤的網址。
+    </p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <a href={`${SITE.base}/`}
+        style="font-family:'Inter',sans-serif; font-size:.85rem; font-weight:500; background:var(--ink); color:#fff; padding:10px 20px;">
+        回首頁
+      </a>
+      <a href={`${SITE.base}/blog/`}
+        style="font-family:'Inter',sans-serif; font-size:.85rem; font-weight:500; border:1px solid var(--border); color:var(--text); padding:10px 20px;">
+        瀏覽文章
+      </a>
+    </div>
+  </div>
+</BaseLayout>

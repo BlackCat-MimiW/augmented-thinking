@@ -1,0 +1,58 @@
+---
+import { SITE, CATEGORIES } from '../data/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  category: string;
+  slug: string;
+  pubDate: Date;
+  image?: string;
+  minutesRead?: number;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { title, description, category, slug, pubDate, image, minutesRead = 5, size = 'md' } = Astro.props;
+const cat = CATEGORIES.find(c => c.slug === category);
+const href = `${SITE.base}/${category}/${slug}/`;
+const dateStr = pubDate.toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' });
+const imgH = size === 'lg' ? '220px' : size === 'md' ? '160px' : '110px';
+---
+
+<article class="card-hover">
+  <a href={href} style="display:block;">
+    <!-- 圖片 -->
+    <div style={`height:${imgH}; overflow:hidden; margin-bottom:0.9rem; background:var(--mist);`}>
+      {image
+        ? <img src={image} alt={title} style="width:100%; height:100%; object-fit:cover; transition:transform .4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" />
+        : <div class="img-placeholder"></div>
+      }
+    </div>
+
+    <!-- 分類 -->
+    {cat && (
+      <div style={`font-family:'Inter',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; color:${cat.color}; margin-bottom:0.4rem;`}>
+        {cat.label}
+      </div>
+    )}
+
+    <!-- 標題 -->
+    <h3 style={`font-family:'Playfair Display',serif; font-weight:700; color:var(--ink); line-height:1.3; margin:0 0 0.4rem; font-size:${size === 'lg' ? '1.3rem' : size === 'md' ? '1.1rem' : '0.95rem'};`}>
+      {title}
+    </h3>
+
+    <!-- 描述 -->
+    {description && size !== 'sm' && (
+      <p style="font-size:0.88rem; color:var(--muted); line-height:1.6; margin:0 0 0.6rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+        {description}
+      </p>
+    )}
+
+    <!-- Meta -->
+    <div style="font-family:'Inter',sans-serif; font-size:0.75rem; color:var(--muted); display:flex; align-items:center; gap:8px;">
+      <time>{dateStr}</time>
+      <span>·</span>
+      <span>{minutesRead} min</span>
+    </div>
+  </a>
+</article>

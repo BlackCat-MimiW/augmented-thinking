@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE, SUBSCRIBE_FORM_URL } from '../../data/site';
+---
+
+<BaseLayout title={`訂閱 — ${SITE.name}`}>
+  <div style="max-width:42rem; margin:0 auto; padding:4rem 1.5rem 6rem;">
+
+    <header style="text-align:center; margin-bottom:3rem;">
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--ink); margin:0 0 .75rem;">
+        訂閱 Augmented Thinking
+      </h1>
+      <p style="color:var(--muted); font-size:.95rem; line-height:1.7;">
+        選擇最適合你的訂閱方式，定期收到最新文章與觀察。
+      </p>
+    </header>
+
+    <!-- RSS 訂閱 -->
+    <section style="border:1px solid var(--border); padding:2rem; margin-bottom:2rem; background:var(--mist);">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:1rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--gold)"><circle cx="5" cy="19" r="3"/><path d="M4 4a16 16 0 0116 16M4 11a9 9 0 019 9" stroke="var(--gold)" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+        <h2 style="font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--ink); margin:0;">RSS Feed 訂閱</h2>
+      </div>
+      <p style="font-size:.88rem; color:var(--muted); margin:0 0 1.25rem; line-height:1.7;">
+        複製以下網址，貼入你慣用的 RSS 閱讀器（Feedly、NetNewsWire、Reeder 等），即可自動收到新文章。
+      </p>
+      <div style="display:flex; gap:8px; align-items:center; background:#fff; border:1px solid var(--border); padding:10px 14px;">
+        <code id="rss-url" style="font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--ink); flex:1; word-break:break-all;">
+          {SITE.url}/rss.xml
+        </code>
+        <button onclick="copyRSS()" style="font-family:'Inter',sans-serif; font-size:.75rem; font-weight:500; background:var(--ink); color:#fff; border:none; padding:6px 14px; cursor:pointer; white-space:nowrap;" id="copy-btn">
+          複製
+        </button>
+      </div>
+      <p style="font-size:.78rem; color:var(--muted); margin:.75rem 0 0; opacity:.7;">
+        推薦閱讀器：<a href="https://feedly.com" target="_blank" style="color:var(--gold);">Feedly</a>（網頁）、<a href="https://reederapp.com" target="_blank" style="color:var(--gold);">Reeder</a>（iOS/Mac）
+      </p>
+    </section>
+
+    <!-- Email 訂閱（Google 表單） -->
+    <section style="border:1px solid var(--border); padding:2rem;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:1rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
+        <h2 style="font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--ink); margin:0;">Email 通知訂閱</h2>
+      </div>
+      <p style="font-size:.88rem; color:var(--muted); margin:0 0 1.25rem; line-height:1.7;">
+        留下姓名與 Email，有新文章時我會親自通知你。
+      </p>
+      {SUBSCRIBE_FORM_URL && SUBSCRIBE_FORM_URL !== 'https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?embedded=true'
+        ? (
+          <iframe
+            src={SUBSCRIBE_FORM_URL}
+            width="100%"
+            height="480"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            style="border:none;"
+            title="訂閱表單"
+          >
+            載入中…
+          </iframe>
+        )
+        : (
+          <div style="background:var(--mist); padding:1.5rem; text-align:center; color:var(--muted); font-size:.88rem;">
+            請在 <code style="font-family:'JetBrains Mono',monospace; background:#e8e4dc; padding:2px 6px;">src/data/site.ts</code> 填入 Google 表單嵌入連結以啟用此功能。
+          </div>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+function copyRSS() {
+  const url = document.getElementById('rss-url')?.textContent?.trim() ?? '';
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) { btn.textContent = '已複製！'; setTimeout(() => btn.textContent = '複製', 2000); }
+  });
+}
+</script>

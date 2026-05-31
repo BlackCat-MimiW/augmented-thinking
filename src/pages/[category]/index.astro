@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { SITE, CATEGORIES } from '../../data/site';
+
+export async function getStaticPaths() {
+  return CATEGORIES.map(cat => ({ params: { category: cat.slug } }));
+}
+
+const { category } = Astro.params;
+const cat = CATEGORIES.find(c => c.slug === category);
+const all = await getCollection('articles', ({ data }) => !data.draft && data.category === category);
+const posts = all.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title={`${cat?.label ?? category} — ${SITE.name}`}>
+  <div style="max-width:72rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
+
+    <!-- 分類 Header -->
+    <header style="border-bottom:1px solid var(--border); padding-bottom:1.5rem; margin-bottom:2.5rem;">
+      <div style="font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:.5rem;">
+        <a href={`${SITE.base}/`} style="opacity:.6;">首頁</a> › {cat?.label}
+      </div>
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--ink); margin:0 0 .4rem;">
+        {cat?.label ?? category}
+      </h1>
+      <p style="font-size:.85rem; color:var(--muted); margin:0;">{posts.length} 篇文章</p>
+    </header>
+
+    <!-- 文章 Grid -->
+    {posts.length === 0
+      ? <p style="color:var(--muted); font-size:.9rem;">此分類尚無文章。</p>
+      : (
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:2rem;">
+          {posts.map(a => (
+            <ArticleCard
+              title={a.data.title}
+              description={a.data.description}
+              category={a.data.category}
+              slug={a.slug}
+              pubDate={a.data.pubDate}
+              image={a.data.image}
+              minutesRead={a.data.minutesRead}
+              size="md"
+            />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  @media(max-width:768px){ div[style*="repeat(3,1fr)"]{ grid-template-columns:1fr 1fr !important; } }
+  @media(max-width:480px){ div[style*="repeat(3,1fr)"]{ grid-template-columns:1fr !important; } }
+</style>

@@ -1,0 +1,512 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE, CATEGORIES } from '../../data/site';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('articles', ({ data }) => !data.draft);
+const total = all.length;
+const drafts = (await getCollection('articles', ({ data }) => !!data.draft)).length;
+const catLabels = JSON.stringify(CATEGORIES.map(c => ({ slug: c.slug, label: c.label })));
+const articles = JSON.stringify(all.sort((a,b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).map(a => ({
+  title: a.data.title,
+  category: a.data.category,
+  slug: a.slug,
+  date: a.data.pubDate.toISOString().split('T')[0],
+  featured: a.data.featured,
+})));
+---
+
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>後台管理 — {SITE.name}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:#0d0d14;color:#c9c5bd;min-height:100vh;display:flex;flex-direction:column;}
+    .adm{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 48px);}
+    .sidebar{background:#111118;border-right:1px solid #1e1e2a;padding:20px 12px;display:flex;flex-direction:column;gap:4px;}
+    .sb-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#5a5a70;padding:0 8px;margin:12px 0 4px;}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:5px;cursor:pointer;font-size:12.5px;color:#8a8a9e;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
+    .sb-item:hover{background:#1a1a28;color:#c9c5bd;}
+    .sb-item.active{background:#1e1e30;color:#f0eeea;border-left:2px solid #FBBF24;}
+    .sb-icon{font-size:15px;width:18px;text-align:center;}
+    .main{padding:28px;overflow-y:auto;}
+    .panel{display:none;} .panel.active{display:block;}
+    .top-bar{background:#111118;border-bottom:1px solid #1e1e2a;padding:0 20px;height:48px;display:flex;align-items:center;justify-content:space-between;}
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+    .stat{background:#111118;border:1px solid #1e1e2a;border-radius:6px;padding:16px;}
+    .stat-n{font-size:22px;font-weight:600;color:#f0eeea;margin-bottom:2px;}
+    .stat-l{font-size:11px;color:#5a5a70;letter-spacing:.04em;}
+    .stat-d{font-size:11px;margin-top:4px;}
+    .up{color:#4ade80;} .warn{color:#FBBF24;}
+    .card{background:#111118;border:1px solid #1e1e2a;border-radius:6px;padding:20px;margin-bottom:16px;}
+    .card-title{font-size:13px;font-weight:500;color:#f0eeea;margin-bottom:14px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}
+    th{text-align:left;padding:8px 12px;color:#5a5a70;font-weight:500;border-bottom:1px solid #1e1e2a;font-size:11px;letter-spacing:.05em;}
+    td{padding:10px 12px;border-bottom:1px solid #1a1a22;color:#c9c5bd;}
+    tr:hover td{background:#141420;}
+    .badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10.5px;font-weight:500;}
+    .badge-pub{background:rgba(74,222,128,.12);color:#4ade80;}
+    .badge-dft{background:rgba(251,191,36,.12);color:#FBBF24;}
+    .badge-cat{background:#1e1e2a;color:#8a8a9e;}
+    .btn{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;padding:6px 14px;border-radius:4px;cursor:pointer;border:none;transition:opacity .15s;}
+    .btn:hover{opacity:.8;}
+    .btn-primary{background:#FBBF24;color:#0d0d14;}
+    .btn-ghost{background:#1e1e2a;color:#c9c5bd;}
+    .input{width:100%;background:#0d0d14;border:1px solid #1e1e2a;border-radius:4px;padding:8px 12px;font-size:12.5px;color:#c9c5bd;font-family:'Inter',sans-serif;outline:none;}
+    .input:focus{border-color:#FBBF24;}
+    label{display:block;font-size:11px;color:#5a5a70;margin-bottom:4px;letter-spacing:.05em;text-transform:uppercase;}
+    .form-row{margin-bottom:14px;}
+    .tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+    .tpl-card{background:#0d0d14;border:1px solid #1e1e2a;border-radius:5px;padding:14px;cursor:pointer;transition:border-color .15s;}
+    .tpl-card:hover{border-color:#FBBF24;}
+    .tpl-card.selected{border-color:#FBBF24;background:#111118;}
+    .tpl-name{font-size:12.5px;font-weight:500;color:#f0eeea;margin-bottom:4px;}
+    .tpl-desc{font-size:11px;color:#5a5a70;line-height:1.5;}
+    .add-tpl{border:1px dashed #1e1e2a;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;color:#5a5a70;font-size:12px;}
+    .add-tpl:hover{border-color:#FBBF24;color:#c9c5bd;}
+    .cat-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0d0d14;border:1px solid #1e1e2a;border-radius:4px;margin-bottom:6px;}
+    .preview-box{background:#0d0d14;border:1px solid #1e1e2a;border-radius:4px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#c9c5bd;white-space:pre-wrap;min-height:180px;line-height:1.6;overflow-y:auto;max-height:320px;}
+    .copy-btn{float:right;margin-top:-2px;}
+    select.input{cursor:pointer;}
+    textarea.input{min-height:100px;resize:vertical;}
+    .color-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;}
+    @media(max-width:768px){.adm{grid-template-columns:1fr;}.sidebar{display:none;}}
+  </style>
+</head>
+<body>
+
+<!-- 頂部 Bar -->
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:13px;font-weight:600;color:#f0eeea;">{SITE.name}</span>
+    <span style="font-size:11px;color:#5a5a70;">後台管理</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a href={`${SITE.base}/`} target="_blank" style="font-size:11.5px;color:#8a8a9e;text-decoration:none;">↗ 前台</a>
+    <a href={`${SITE.base}/rss.xml`} target="_blank" style="font-size:11.5px;color:#8a8a9e;text-decoration:none;">RSS</a>
+  </div>
+</div>
+
+<div class="adm">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-title">主選單</div>
+    <button class="sb-item active" onclick="show('dash',this)">
+      <span class="sb-icon">📊</span> 數據儀表板
+    </button>
+    <button class="sb-item" onclick="show('articles',this)">
+      <span class="sb-icon">📄</span> 文章管理
+    </button>
+    <button class="sb-item" onclick="show('new',this)">
+      <span class="sb-icon">✏️</span> 新增文章
+    </button>
+    <button class="sb-item" onclick="show('templates',this)">
+      <span class="sb-icon">📐</span> 模板庫
+    </button>
+    <div class="sb-title">設定</div>
+    <button class="sb-item" onclick="show('categories',this)">
+      <span class="sb-icon">🗂️</span> 分類管理
+    </button>
+    <button class="sb-item" onclick="show('style',this)">
+      <span class="sb-icon">🎨</span> 風格設定
+    </button>
+    <button class="sb-item" onclick="show('subscribers',this)">
+      <span class="sb-icon">📬</span> 訂閱名單
+    </button>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ── 儀表板 ── -->
+    <div id="p-dash" class="panel active">
+      <h2 style="font-size:15px;font-weight:600;color:#f0eeea;margin-bottom:16px;">數據儀表板</h2>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-n" id="s-total">{total}</div>
+          <div class="stat-l">文章總數</div>
+          <div class="stat-d warn">{drafts} 篇草稿</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="s-cats">{CATEGORIES.length}</div>
+          <div class="stat-l">分類數</div>
+          <div class="stat-d" style="color:#5a5a70;">可自由增減</div>
+        </div>
+        <div class="stat" id="s-ga">
+          <div class="stat-n">—</div>
+          <div class="stat-l">本週瀏覽</div>
+          <div class="stat-d" style="color:#5a5a70;font-size:10px;">設定 GA4 後顯示</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n">—</div>
+          <div class="stat-l">訂閱人數</div>
+          <div class="stat-d" style="color:#5a5a70;font-size:10px;">連結 Google 表單後顯示</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">最新文章</div>
+        <table>
+          <thead><tr><th>標題</th><th>分類</th><th>狀態</th><th>日期</th></tr></thead>
+          <tbody id="tb-dash"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="background:rgba(251,191,36,.04);border-color:rgba(251,191,36,.15);">
+        <div class="card-title" style="color:#FBBF24;">⚡ GA4 Analytics 整合</div>
+        <p style="font-size:12px;color:#8a8a9e;line-height:1.7;margin-bottom:12px;">前往 <code style="background:#1e1e2a;padding:2px 6px;border-radius:3px;">src/data/site.ts</code> 填入你的 <strong style="color:#c9c5bd;">GA_ID</strong>（格式：G-XXXXXXXXXX），即可在 Google Analytics 查看詳細流量數據。</p>
+        <a href="https://analytics.google.com" target="_blank" class="btn btn-ghost" style="font-size:11px;">前往 Google Analytics →</a>
+      </div>
+    </div>
+
+    <!-- ── 文章列表 ── -->
+    <div id="p-articles" class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="font-size:15px;font-weight:600;color:#f0eeea;">文章管理</h2>
+        <button class="btn btn-primary" onclick="show('new',document.querySelector('[onclick*=new]'))">+ 新增文章</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>標題</th><th>分類</th><th>精選</th><th>日期</th></tr></thead>
+          <tbody id="tb-articles"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 新增文章 ── -->
+    <div id="p-new" class="panel">
+      <h2 style="font-size:15px;font-weight:600;color:#f0eeea;margin-bottom:16px;">新增文章</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div>
+          <div class="card">
+            <div class="card-title">1. 選擇模板</div>
+            <div id="quick-tpl" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">2. 填寫資訊</div>
+            <div class="form-row">
+              <label>標題</label>
+              <input class="input" id="f-title" placeholder="文章標題" oninput="genMDX()" />
+            </div>
+            <div class="form-row">
+              <label>描述（副標）</label>
+              <input class="input" id="f-desc" placeholder="一句話摘要" oninput="genMDX()" />
+            </div>
+            <div class="form-row">
+              <label>分類</label>
+              <select class="input" id="f-cat" oninput="genMDX()">
+                <option value="">選擇分類</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>標籤（逗號分隔）</label>
+              <input class="input" id="f-tags" placeholder="AI, 工具, 2026" oninput="genMDX()" />
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="form-row">
+                <label>發布日期</label>
+                <input class="input" type="date" id="f-date" oninput="genMDX()" />
+              </div>
+              <div class="form-row">
+                <label>閱讀時間（分鐘）</label>
+                <input class="input" type="number" id="f-min" value="5" min="1" oninput="genMDX()" />
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:4px;">
+              <input type="checkbox" id="f-featured" oninput="genMDX()" />
+              <span style="font-size:12px;color:#c9c5bd;text-transform:none;letter-spacing:0;">設為精選（首頁大圖）</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="height:100%;">
+            <div class="card-title" style="display:flex;justify-content:space-between;">
+              <span>3. 產生 MDX 檔案</span>
+              <button class="btn btn-ghost copy-btn" onclick="copyMDX()" id="mdx-btn" style="font-size:11px;">複製</button>
+            </div>
+            <div class="preview-box" id="mdx-out"></div>
+            <p style="font-size:11px;color:#5a5a70;margin-top:10px;line-height:1.6;">
+              複製後，儲存為 <code style="background:#1e1e2a;padding:1px 5px;">src/content/articles/YOUR-SLUG.mdx</code>，貼入內容後 git push 即可上線。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 模板庫 ── -->
+    <div id="p-templates" class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="font-size:15px;font-weight:600;color:#f0eeea;">模板庫</h2>
+        <button class="btn btn-ghost" onclick="addTemplate()">+ 新增模板</button>
+      </div>
+      <div class="tpl-grid" id="tpl-list"></div>
+    </div>
+
+    <!-- ── 分類管理 ── -->
+    <div id="p-categories" class="panel">
+      <h2 style="font-size:15px;font-weight:600;color:#f0eeea;margin-bottom:16px;">分類管理</h2>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">目前分類</div>
+        <div id="cat-list"></div>
+      </div>
+      <div class="card" style="background:rgba(251,191,36,.04);border-color:rgba(251,191,36,.15);">
+        <div class="card-title" style="color:#FBBF24;">⚡ 修改分類</div>
+        <p style="font-size:12px;color:#8a8a9e;line-height:1.7;">
+          編輯 <code style="background:#1e1e2a;padding:2px 6px;border-radius:3px;">src/data/site.ts</code> 中的 <code style="background:#1e1e2a;padding:2px 6px;border-radius:3px;">CATEGORIES</code> 陣列，新增或刪除分類後 git push 即可更新前台導覽列。
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 風格設定 ── -->
+    <div id="p-style" class="panel">
+      <h2 style="font-size:15px;font-weight:600;color:#f0eeea;margin-bottom:16px;">風格設定</h2>
+      <div class="card">
+        <div class="card-title">CSS 變數（修改後更新 global.css）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-row">
+            <label>主色（--ink）</label>
+            <div style="display:flex;gap:8px;">
+              <input type="color" value="#0f0f0f" id="c-ink" oninput="previewColor()" style="width:40px;height:36px;border:1px solid #1e1e2a;border-radius:4px;cursor:pointer;background:none;" />
+              <input class="input" id="cv-ink" value="#0f0f0f" oninput="previewColor()" style="font-family:'JetBrains Mono',monospace;" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label>強調金色（--gold）</label>
+            <div style="display:flex;gap:8px;">
+              <input type="color" value="#b8860b" id="c-gold" oninput="previewColor()" style="width:40px;height:36px;border:1px solid #1e1e2a;border-radius:4px;cursor:pointer;background:none;" />
+              <input class="input" id="cv-gold" value="#b8860b" oninput="previewColor()" style="font-family:'JetBrains Mono',monospace;" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label>背景霧白（--mist）</label>
+            <div style="display:flex;gap:8px;">
+              <input type="color" value="#f7f6f3" id="c-mist" oninput="previewColor()" style="width:40px;height:36px;border:1px solid #1e1e2a;border-radius:4px;cursor:pointer;background:none;" />
+              <input class="input" id="cv-mist" value="#f7f6f3" oninput="previewColor()" style="font-family:'JetBrains Mono',monospace;" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label>邊框色（--border）</label>
+            <div style="display:flex;gap:8px;">
+              <input type="color" value="#e5e2db" id="c-border" oninput="previewColor()" style="width:40px;height:36px;border:1px solid #1e1e2a;border-radius:4px;cursor:pointer;background:none;" />
+              <input class="input" id="cv-border" value="#e5e2db" oninput="previewColor()" style="font-family:'JetBrains Mono',monospace;" />
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <div class="card-title">產生 CSS 變數區塊</div>
+          <div class="preview-box" id="css-out"></div>
+          <button class="btn btn-ghost" style="margin-top:8px;font-size:11px;" onclick="copyCSSVars()">複製 CSS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 訂閱名單 ── -->
+    <div id="p-subscribers" class="panel">
+      <h2 style="font-size:15px;font-weight:600;color:#f0eeea;margin-bottom:16px;">訂閱名單</h2>
+      <div class="card" style="background:rgba(251,191,36,.04);border-color:rgba(251,191,36,.15);">
+        <div class="card-title" style="color:#FBBF24;">⚡ 連結 Google 表單</div>
+        <p style="font-size:12px;color:#8a8a9e;line-height:1.7;margin-bottom:12px;">
+          訂閱名單儲存在 Google 表單的回應試算表中。點擊下方前往查看。
+        </p>
+        <div style="display:flex;gap:10px;">
+          <a href={`${SITE.base}/subscribe/`} target="_blank" class="btn btn-ghost" style="font-size:11px;">訂閱頁面 →</a>
+          <a href="https://docs.google.com/forms" target="_blank" class="btn btn-ghost" style="font-size:11px;">Google 表單 →</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script define:vars={{ catLabels, articles }}>
+  const cats = JSON.parse(catLabels);
+  const arts = JSON.parse(articles);
+
+  // 填充分類 select
+  const sel = document.getElementById('f-cat');
+  cats.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.slug; o.textContent = c.label;
+    sel.appendChild(o);
+  });
+
+  // 設定今天日期
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+
+  // 文章表格
+  function renderTable(id, list) {
+    const tb = document.getElementById(id);
+    if (!tb) return;
+    tb.innerHTML = list.slice(0,20).map(a => {
+      const cat = cats.find(c => c.slug === a.category);
+      return `<tr>
+        <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a.title}</td>
+        <td><span class="badge badge-cat">${cat?.label ?? a.category}</span></td>
+        <td>${a.featured ? '<span class="badge badge-pub">精選</span>' : '—'}</td>
+        <td style="color:#5a5a70;font-size:11px;">${a.date}</td>
+      </tr>`;
+    }).join('');
+  }
+  renderTable('tb-dash', arts);
+  renderTable('tb-articles', arts);
+
+  // 分類列表
+  const catList = document.getElementById('cat-list');
+  cats.forEach(c => {
+    const cnt = arts.filter(a => a.category === c.slug).length;
+    catList.innerHTML += `<div class="cat-row">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#FBBF24;display:inline-block;"></span>
+        <span style="font-size:13px;color:#c9c5bd;">${c.label}</span>
+        <span style="font-size:11px;color:#5a5a70;">/${c.slug}</span>
+      </div>
+      <span style="font-size:11px;color:#5a5a70;">${cnt} 篇</span>
+    </div>`;
+  });
+
+  // ── 模板 ──
+  const defaultTpls = [
+    { id:'review', name:'工具評測', icon:'⭐', desc:'評分、優缺點、使用場景對比', body:`## 工具介紹\n\n## 核心功能\n\n| 功能 | 說明 |\n|---|---|\n| 功能A | 說明 |\n\n## 優點\n\n## 缺點\n\n## 適合誰用\n\n## 總評\n` },
+    { id:'tutorial', name:'教學文章', icon:'📖', desc:'步驟化操作，附截圖說明', body:`## 前言\n\n## 你需要準備\n\n## 步驟一：\n\n## 步驟二：\n\n## 步驟三：\n\n## 常見問題\n\n## 小結\n` },
+    { id:'observation', name:'觀察筆記', icon:'🔭', desc:'現象分析、多層次觀點', body:`## 現象描述\n\n## 背後邏輯\n\n## 三個觀察角度\n\n### 角度一\n\n### 角度二\n\n### 角度三\n\n## 我的判斷\n` },
+    { id:'comparison', name:'比較分析', icon:'⚖️', desc:'兩個以上選項的系統比較', body:`## 背景\n\n## 比較維度\n\n| 維度 | 選項A | 選項B |\n|---|---|---|\n| 維度1 | | |\n\n## 分析\n\n## 結論\n` },
+    { id:'investment', name:'投資觀點', icon:'📈', desc:'市場觀察、邏輯推演', body:`## 現況\n\n## 關鍵數據\n\n## 邏輯推演\n\n## 風險評估\n\n## 我的看法\n\n> 以上非投資建議，僅為個人觀察。\n` },
+    { id:'custom', name:'+ 新增模板', icon:'➕', desc:'建立自訂模板', body:'', isAdd:true },
+  ];
+
+  let tpls = JSON.parse(localStorage.getItem('at-tpls') || 'null') || defaultTpls.filter(t => !t.isAdd);
+  let selTpl = tpls[0];
+
+  function renderTpls() {
+    const grid = document.getElementById('tpl-list');
+    const quickGrid = document.getElementById('quick-tpl');
+    const allTpls = [...tpls, {id:'custom',name:'+ 新增模板',icon:'➕',desc:'建立自訂模板',body:'',isAdd:true}];
+
+    grid.innerHTML = allTpls.map(t => `
+      <div class="tpl-card ${selTpl?.id === t.id && !t.isAdd ? 'selected' : ''} ${t.isAdd ? 'add-tpl' : ''}"
+        onclick="${t.isAdd ? 'addTemplate()' : `selTemplate('${t.id}')`}">
+        <div style="font-size:20px;margin-bottom:6px;">${t.icon}</div>
+        <div class="tpl-name">${t.name}</div>
+        <div class="tpl-desc">${t.desc}</div>
+        ${!t.isAdd ? `<button onclick="event.stopPropagation();delTemplate('${t.id}')" style="margin-top:8px;font-size:10px;background:none;border:none;color:#5a5a70;cursor:pointer;">刪除</button>` : ''}
+      </div>`).join('');
+
+    if (quickGrid) {
+      quickGrid.innerHTML = tpls.slice(0,4).map(t => `
+        <div class="tpl-card" style="padding:8px 10px;" onclick="selTemplate('${t.id}');show('new',null)">
+          <div style="font-size:13px;font-weight:500;color:#f0eeea;">${t.icon} ${t.name}</div>
+        </div>`).join('');
+    }
+  }
+
+  function selTemplate(id) {
+    selTpl = tpls.find(t => t.id === id);
+    genMDX();
+    renderTpls();
+  }
+
+  function addTemplate() {
+    const name = prompt('模板名稱：'); if (!name) return;
+    const icon = prompt('Emoji 圖示（例如：🔑）：') || '📝';
+    const desc = prompt('簡短說明：') || '';
+    const body = prompt('模板內容（Markdown）：') || '';
+    tpls.push({ id: Date.now().toString(), name, icon, desc, body });
+    localStorage.setItem('at-tpls', JSON.stringify(tpls));
+    renderTpls();
+  }
+
+  function delTemplate(id) {
+    if (!confirm('確定刪除此模板？')) return;
+    tpls = tpls.filter(t => t.id !== id);
+    if (selTpl?.id === id) selTpl = tpls[0];
+    localStorage.setItem('at-tpls', JSON.stringify(tpls));
+    renderTpls();
+  }
+
+  window.selTemplate = selTemplate;
+  window.addTemplate = addTemplate;
+  window.delTemplate = delTemplate;
+  renderTpls();
+
+  // ── MDX 產生器 ──
+  function genMDX() {
+    const title = document.getElementById('f-title')?.value || '文章標題';
+    const desc  = document.getElementById('f-desc')?.value || '';
+    const cat   = document.getElementById('f-cat')?.value || 'blog';
+    const tags  = (document.getElementById('f-tags')?.value || '').split(',').map(s=>s.trim()).filter(Boolean);
+    const date  = document.getElementById('f-date')?.value || new Date().toISOString().split('T')[0];
+    const min   = document.getElementById('f-min')?.value || '5';
+    const feat  = document.getElementById('f-featured')?.checked ? 'true' : 'false';
+    const body  = selTpl?.body || '## 開始寫作\n\n';
+
+    const mdx = `---
+title: ${title}
+description: ${desc}
+category: ${cat}
+pubDate: ${date}
+tags: [${tags.map(t=>`"${t}"`).join(', ')}]
+minutesRead: ${min}
+featured: ${feat}
+draft: false
+---
+
+${body}`;
+
+    const out = document.getElementById('mdx-out');
+    if (out) out.textContent = mdx;
+  }
+
+  genMDX();
+
+  function copyMDX() {
+    const txt = document.getElementById('mdx-out')?.textContent || '';
+    navigator.clipboard.writeText(txt).then(() => {
+      const btn = document.getElementById('mdx-btn');
+      if (btn) { btn.textContent = '已複製！'; setTimeout(() => btn.textContent = '複製', 2000); }
+    });
+  }
+  window.copyMDX = copyMDX;
+
+  // ── 面板切換 ──
+  function show(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById(`p-${id}`);
+    if (panel) panel.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  window.show = show;
+
+  // ── 風格設定 ──
+  function previewColor() {
+    ['ink','gold','mist','border'].forEach(k => {
+      const c = document.getElementById(`c-${k}`);
+      const v = document.getElementById(`cv-${k}`);
+      if(c && v){
+        c.addEventListener('input',()=>v.value=c.value);
+        v.addEventListener('input',()=>c.value=v.value);
+      }
+    });
+    const ink = document.getElementById('cv-ink')?.value || '#0f0f0f';
+    const gold= document.getElementById('cv-gold')?.value|| '#b8860b';
+    const mist= document.getElementById('cv-mist')?.value|| '#f7f6f3';
+    const bord= document.getElementById('cv-border')?.value||'#e5e2db';
+    const out = document.getElementById('css-out');
+    if(out) out.textContent=`:root {\n  --ink:    ${ink};\n  --mist:   ${mist};\n  --border: ${bord};\n  --gold:   ${gold};\n}`;
+  }
+  previewColor();
+
+  function copyCSSVars(){
+    navigator.clipboard.writeText(document.getElementById('css-out')?.textContent||'');
+  }
+  window.copyCSSVars=copyCSSVars;
+  window.previewColor=previewColor;
+</script>
+</body>
+</html>

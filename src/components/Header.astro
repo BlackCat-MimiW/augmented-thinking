@@ -1,0 +1,102 @@
+---
+import { SITE, CATEGORIES } from '../data/site';
+
+const main = CATEGORIES.slice(0, 4);
+const more = CATEGORIES.slice(4);
+const path = Astro.url.pathname;
+---
+
+<header style="border-bottom:1px solid var(--border); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); position:sticky; top:0; z-index:50;">
+
+  <!-- 頂部細條 -->
+  <div style="background:var(--ink); height:3px;"></div>
+
+  <div style="max-width:72rem; margin:0 auto; padding:0 1.5rem;">
+
+    <!-- Logo 行 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 0 0.75rem; border-bottom:1px solid var(--border);">
+      <a href={`${SITE.base}/`} style="font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:var(--ink); letter-spacing:-0.5px;">
+        {SITE.name}
+      </a>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href={`${SITE.base}/subscribe/`}
+          style="font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:500; border:1px solid var(--ink); padding:5px 14px; color:var(--ink); transition:all .15s;"
+          onmouseover="this.style.background='var(--ink)';this.style.color='#fff'"
+          onmouseout="this.style.background='transparent';this.style.color='var(--ink)'">
+          訂閱 RSS
+        </a>
+        <a href={`${SITE.base}/admin/`}
+          style="font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:500; background:var(--ink); padding:5px 14px; color:#fff;">
+          後台
+        </a>
+        <!-- 漢堡（手機） -->
+        <button id="mob-btn" style="display:none; background:none; border:none; cursor:pointer; padding:4px;" aria-label="選單">
+          <svg width="22" height="16" viewBox="0 0 22 16"><line x1="0" y1="2" x2="22" y2="2" stroke="var(--ink)" stroke-width="2"/><line x1="0" y1="8" x2="22" y2="8" stroke="var(--ink)" stroke-width="2"/><line x1="0" y1="14" x2="22" y2="14" stroke="var(--ink)" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 桌面導覽 -->
+    <nav id="desk-nav" style="display:flex; align-items:center; gap:0; padding:0;">
+      {main.map(cat => (
+        <a href={`${SITE.base}/${cat.slug}/`}
+          style={`font-family:'Inter',sans-serif; font-size:0.82rem; font-weight:500; padding:0.6rem 1rem; letter-spacing:0.02em; color:${path.includes(cat.slug) ? 'var(--ink)' : 'var(--muted)'}; border-bottom:${path.includes(cat.slug) ? '2px solid var(--ink)' : '2px solid transparent'}; transition:color .15s;`}>
+          {cat.label}
+        </a>
+      ))}
+
+      <!-- 更多下拉 -->
+      {more.length > 0 && (
+        <div style="position:relative;" id="more-wrap">
+          <button onclick="toggleMore()" style="font-family:'Inter',sans-serif; font-size:0.82rem; font-weight:500; padding:0.6rem 1rem; color:var(--muted); background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; display:flex; align-items:center; gap:4px;">
+            更多 <svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <div id="more-menu" style="display:none; position:absolute; top:100%; left:0; background:#fff; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,.08); min-width:130px; z-index:100;">
+            {more.map(cat => (
+              <a href={`${SITE.base}/${cat.slug}/`}
+                style="display:block; font-family:'Inter',sans-serif; font-size:0.82rem; padding:0.6rem 1rem; color:var(--muted); border-bottom:1px solid var(--border);"
+                onmouseover="this.style.color='var(--ink)'; this.style.background='var(--mist)'"
+                onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">
+                {cat.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
+
+    <!-- 手機選單 -->
+    <nav id="mob-menu" style="display:none; flex-direction:column; border-top:1px solid var(--border); padding:0.5rem 0 1rem;">
+      {CATEGORIES.map(cat => (
+        <a href={`${SITE.base}/${cat.slug}/`}
+          style="font-family:'Inter',sans-serif; font-size:0.9rem; padding:0.65rem 0; color:var(--text); border-bottom:1px solid var(--border);">
+          {cat.label}
+        </a>
+      ))}
+    </nav>
+
+  </div>
+</header>
+
+<style>
+  @media (max-width: 768px) {
+    #desk-nav { display: none !important; }
+    #mob-btn  { display: block !important; }
+  }
+</style>
+
+<script>
+  function toggleMore() {
+    const m = document.getElementById('more-menu');
+    if (m) m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+  document.getElementById('mob-btn')?.addEventListener('click', () => {
+    const m = document.getElementById('mob-menu');
+    if (m) m.style.display = m.style.display === 'none' ? 'flex' : 'none';
+  });
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('more-wrap');
+    const menu = document.getElementById('more-menu');
+    if (wrap && menu && !wrap.contains(e.target as Node)) menu.style.display = 'none';
+  });
+</script>

@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE, SOCIAL } from '../../data/site';
+
+const icons: Record<string,string> = {
+  linkedin:  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>',
+  instagram: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+  facebook:  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>',
+  youtube:   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>',
+  threads:   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-.505-1.891-1.408-3.355-2.688-4.35-1.348-1.04-3.144-1.578-5.328-1.595-2.782.022-4.923.907-6.364 2.63-1.394 1.67-2.103 4.1-2.12 7.233.016 3.13.725 5.561 2.12 7.23 1.44 1.725 3.582 2.61 6.363 2.63 2.437-.015 4.07-.647 5.232-2.04.403-.482.73-1.093.978-1.823-.572.066-1.13.1-1.668.1-2.25 0-4.086-.544-5.46-1.618-1.47-1.15-2.252-2.83-2.252-4.858 0-2.23.878-4.018 2.54-5.172 1.475-1.03 3.455-1.573 5.73-1.573.49 0 .967.026 1.427.077-.1-.442-.235-.84-.408-1.195C17.68 3.88 16.51 3.6 15.34 3.6c-1.172 0-2.233.35-3.18.876l-.86-1.858c1.22-.682 2.62-1.04 4.04-1.04 2.08 0 3.77.676 4.87 1.956.9 1.056 1.42 2.5 1.55 4.29.14.04.274.082.407.128 2.086.717 3.323 2.267 3.323 4.21 0 1.543-.636 2.783-1.84 3.583-.942.629-2.204.975-3.645.975-.284 0-.573-.015-.862-.043-.325 1.01-.774 1.878-1.353 2.582C17.457 20.7 15.01 21.5 12.186 24z"/></svg>',
+};
+---
+
+<BaseLayout title={`關於 — ${SITE.name}`}>
+  <div style="max-width:52rem; margin:0 auto; padding:4rem 1.5rem 6rem; display:grid; grid-template-columns:1fr 2fr; gap:4rem; align-items:start;">
+
+    <!-- 左側 -->
+    <aside>
+      <!-- 頭像佔位 -->
+      <div style="width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg,#e8e0d0,#c8bfb0); margin-bottom:1.5rem; overflow:hidden;">
+        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:var(--muted);">👤</div>
+      </div>
+
+      <h2 style="font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; color:var(--ink); margin:0 0 .25rem;">王品禎</h2>
+      <p style="font-size:.82rem; color:var(--muted); margin:0 0 1.25rem;">品牌行銷管理 · 台灣新北新莊</p>
+
+      <!-- 社群 -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        {SOCIAL.map(s => (
+          <a href={s.href} target="_blank" rel="noopener"
+            aria-label={s.platform}
+            style="color:var(--muted); transition:color .15s;"
+            onmouseover="this.style.color='var(--ink)'"
+            onmouseout="this.style.color='var(--muted)'">
+            <Fragment set:html={icons[s.icon] ?? ''} />
+          </a>
+        ))}
+      </div>
+
+      <!-- 快速資訊 -->
+      <div style="margin-top:1.75rem; display:flex; flex-direction:column; gap:8px;">
+        {[
+          ['職域', '零售通路、促銷策略'],
+          ['關注', 'AI 工作流、商業思維'],
+          ['所在', '台灣，新北新莊'],
+        ].map(([k,v]) => (
+          <div style="font-size:.82rem; display:flex; gap:10px;">
+            <span style="color:var(--muted); width:36px; flex-shrink:0;">{k}</span>
+            <span style="color:var(--text);">{v}</span>
+          </div>
+        ))}
+      </div>
+    </aside>
+
+    <!-- 右側 -->
+    <div>
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--ink); margin:0 0 2rem; line-height:1.2;">
+        關於 Augmented Thinking
+      </h1>
+
+      <div style="display:flex; flex-direction:column; gap:1.25rem; font-size:1rem; line-height:1.85; color:var(--text);">
+        <p>
+          我在零售通路與品牌行銷領域工作超過十年。AI 工具開始普及之後，我觀察到一個持續擴大的現象：
+          <strong style="color:var(--ink);">「有在用 AI」與「真的會用 AI」之間，存在巨大的落差。</strong>
+        </p>
+        <p>
+          多數人的 AI 使用停留在「幫我寫一段文案」然後對話結束。真正的生產力躍升，
+          發生在 AI 開始嵌入工作流、形成持續槓桿之後。這中間的路，沒有人清楚地說過。
+        </p>
+        <p>
+          這個部落格是我整理這段路的地方——不從技術角度出發，而是從一個行銷人、
+          通路從業者、以及持續觀察台灣商業生態的人的視角。
+        </p>
+
+        <div style="border-left:3px solid var(--ink); padding-left:1.25rem; font-family:'Playfair Display',serif; font-style:italic; color:var(--muted); font-size:1.05rem; margin:0.5rem 0;">
+          AI 不只是一種工具，而是新的思考與工作系統。
+        </div>
+
+        <p>
+          涵蓋主題包括：AI 工具實測、Prompt 設計方法、商業思維分析、社會觀察、
+          投資邏輯，以及我正在摸索中的各種想法。
+        </p>
+      </div>
+
+      <div style="margin-top:2.5rem; display:flex; gap:12px; flex-wrap:wrap;">
+        <a href={`${SITE.base}/blog/why-i-started-this-blog/`}
+          style="font-family:'Inter',sans-serif; font-size:.85rem; font-weight:500; background:var(--ink); color:#fff; padding:10px 20px;">
+          閱讀起點文章 →
+        </a>
+        <a href={`${SITE.base}/subscribe/`}
+          style="font-family:'Inter',sans-serif; font-size:.85rem; font-weight:500; border:1px solid var(--border); color:var(--text); padding:10px 20px;">
+          訂閱更新
+        </a>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+  @media (max-width: 768px) {
+    div[style*="grid-template-columns:1fr 2fr"] { grid-template-columns: 1fr !important; }
+  }
+</style>

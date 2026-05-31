@@ -1,0 +1,96 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { SITE, CATEGORIES } from '../data/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  category: string;
+  pubDate: Date;
+  tags?: string[];
+  minutesRead?: number;
+  image?: string;
+}
+
+const { title, description, category, pubDate, tags = [], minutesRead = 5, image } = Astro.props;
+const cat = CATEGORIES.find(c => c.slug === category);
+const dateStr = pubDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout title={title} description={description} image={image}>
+  <article style="max-width:42rem; margin:0 auto; padding:3rem 1.5rem 5rem;">
+
+    <!-- Breadcrumb -->
+    <nav style="font-size:0.8rem; color:var(--muted); margin-bottom:2rem; font-family:'Inter',sans-serif;">
+      <a href={`${SITE.base}/`} style="opacity:0.7;">首頁</a>
+      <span style="margin:0 8px;">›</span>
+      {cat && <a href={`${SITE.base}/${category}/`} style="opacity:0.7;">{cat.label}</a>}
+      <span style="margin:0 8px;">›</span>
+      <span>{title}</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="fade-up" style="margin-bottom:2.5rem;">
+      {cat && (
+        <a href={`${SITE.base}/${category}/`}
+          style={`display:inline-block; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:${cat.color}; border:1px solid ${cat.color}; padding:3px 10px; border-radius:2px; margin-bottom:1.25rem;`}>
+          {cat.label}
+        </a>
+      )}
+
+      <h1 style="font-family:'Playfair Display',serif; font-size:clamp(1.75rem,4vw,2.5rem); font-weight:700; color:var(--ink); line-height:1.2; margin:0 0 1rem;">
+        {title}
+      </h1>
+
+      {description && (
+        <p style="font-family:'Playfair Display',serif; font-size:1.15rem; font-style:italic; color:var(--muted); margin:0 0 1.5rem; line-height:1.6;">
+          {description}
+        </p>
+      )}
+
+      <div style="display:flex; align-items:center; gap:12px; font-family:'Inter',sans-serif; font-size:0.82rem; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:0.75rem 0;">
+        <time>{dateStr}</time>
+        <span>·</span>
+        <span>{minutesRead} 分鐘閱讀</span>
+        {tags.length > 0 && (
+          <>
+            <span>·</span>
+            <span>{tags.join('、')}</span>
+          </>
+        )}
+      </div>
+    </header>
+
+    <!-- 封面圖 -->
+    {image && (
+      <div class="fade-up delay-1" style="margin-bottom:2.5rem; aspect-ratio:16/9; overflow:hidden;">
+        <img src={image} alt={title} style="width:100%; height:100%; object-fit:cover;" />
+      </div>
+    )}
+
+    <!-- 文章內文 -->
+    <div class="prose-article fade-up delay-2">
+      <slot />
+    </div>
+
+    <!-- Tags -->
+    {tags.length > 0 && (
+      <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border); display:flex; gap:8px; flex-wrap:wrap;">
+        {tags.map(tag => (
+          <span style="font-family:'Inter',sans-serif; font-size:0.78rem; background:var(--mist); color:var(--muted); padding:4px 10px; border-radius:2px;">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )}
+
+    <!-- 回列表 -->
+    <div style="margin-top:3rem;">
+      <a href={`${SITE.base}/${category}/`}
+        style="font-family:'Inter',sans-serif; font-size:0.85rem; color:var(--muted); display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); padding:8px 16px; border-radius:2px;">
+        ← 回 {cat?.label ?? '列表'}
+      </a>
+    </div>
+
+  </article>
+</BaseLayout>

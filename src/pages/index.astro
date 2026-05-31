@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { SITE, CATEGORIES } from '../data/site';
+
+const all = await getCollection('articles', ({ data }) => !data.draft);
+const sorted = all.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// 精選文章（首頁大圖）
+const featured = sorted.filter(a => a.data.featured).slice(0, 3);
+const hero     = featured[0] ?? sorted[0];
+const sub      = featured.slice(1, 3).length ? featured.slice(1, 3) : sorted.slice(1, 3);
+
+// 各分類最新 3 篇
+const byCat = (slug: string) => sorted.filter(a => a.data.category === slug).slice(0, 3);
+---
+
+<BaseLayout>
+  <div style="max-width:72rem; margin:0 auto; padding:0 1.5rem;">
+
+    <!-- ── Hero 區塊 ─────────────────────────── -->
+    {hero && (
+      <section style="padding:2rem 0; border-bottom:1px solid var(--border);">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; align-items:start;">
+
+          <!-- 大圖主文章 -->
+          <a href={`${SITE.base}/${hero.data.category}/${hero.slug}/`} class="card-hover" style="display:block;">
+            <div style="aspect-ratio:4/3; overflow:hidden; margin-bottom:1rem; background:var(--mist);">
+              {hero.data.image
+                ? <img src={hero.data.image} alt={hero.data.title} style="width:100%;height:100%;object-fit:cover;" />
+                : <div class="img-placeholder"></div>
+              }
+            </div>
+            <div style="font-family:'Inter',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:.5rem;">
+              精選
+            </div>
+            <h2 style="font-family:'Playfair Display',serif; font-size:clamp(1.4rem,3vw,2rem); font-weight:700; color:var(--ink); line-height:1.2; margin:0 0 .75rem;">
+              {hero.data.title}
+            </h2>
+            {hero.data.description && (
+              <p style="font-size:.9rem; color:var(--muted); line-height:1.65; margin:0 0 .75rem;">{hero.data.description}</p>
+            )}
+            <span style="font-family:'Inter',sans-serif; font-size:.75rem; color:var(--muted);">
+              {hero.data.pubDate.toLocaleDateString('zh-TW',{month:'short',day:'numeric'})} · {hero.data.minutesRead} min
+            </span>
+          </a>
+
+          <!-- 右側 2 篇 -->
+          <div style="display:flex; flex-direction:column; gap:1.25rem;">
+            {sub.map(a => (
+              <ArticleCard
+                title={a.data.title}
+                description={a.data.description}
+                category={a.data.category}
+                slug={a.slug}
+                pubDate={a.data.pubDate}
+                image={a.data.image}
+                minutesRead={a.data.minutesRead}
+                size="md"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- ── 分類區塊 ─────────────────────────── -->
+    {CATEGORIES.filter(c => c.slug !== 'discussion').map(cat => {
+      const posts = byCat(cat.slug);
+      if (posts.length === 0) return null;
+      return (
+        <section style="padding:2.5rem 0; border-bottom:1px solid var(--border);">
+          <div class="section-rule" style="margin-bottom:1.25rem;">
+            <a href={`${SITE.base}/${cat.slug}/`}
+              style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:var(--ink); letter-spacing:0.02em;">
+              {cat.label}
+            </a>
+            <div style="flex:1; height:1px; background:var(--border); margin-left:12px;"></div>
+            <a href={`${SITE.base}/${cat.slug}/`}
+              style="font-family:'Inter',sans-serif; font-size:0.75rem; color:var(--muted); white-space:nowrap;">
+              全部 →
+            </a>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem;">
+            {posts.map(a => (
+              <ArticleCard
+                title={a.data.title}
+                description={a.data.description}
+                category={a.data.category}
+                slug={a.slug}
+                pubDate={a.data.pubDate}
+                image={a.data.image}
+                minutesRead={a.data.minutesRead}
+                size="sm"
+              />
+            ))}
+          </div>
+        </section>
+      );
+    })}
+
+    <!-- ── 訂閱 Banner ──────────────────────── -->
+    <section style="padding:3rem 0; text-align:center;">
+      <div style="max-width:36rem; margin:0 auto; border:1px solid var(--border); padding:2.5rem; background:var(--mist);">
+        <div style="font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:700; color:var(--ink); margin-bottom:.6rem;">
+          訂閱 Augmented Thinking
+        </div>
+        <p style="font-size:.88rem; color:var(--muted); margin:0 0 1.5rem; line-height:1.7;">
+          定期收到最新文章，不錯過任何觀察與分析。
+        </p>
+        <a href={`${SITE.base}/subscribe/`}
+          style="font-family:'Inter',sans-serif; font-size:.85rem; font-weight:500; background:var(--ink); color:#fff; padding:10px 24px; display:inline-block;">
+          訂閱 →
+        </a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  @media (max-width:768px) {
+    section > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
+    section > div[style*="grid-template-columns:repeat(3"] { grid-template-columns:1fr 1fr !important; }
+  }
+  @media (max-width:480px) {
+    section > div[style*="grid-template-columns:repeat(3"] { grid-template-columns:1fr !important; }
+  }
+</style>

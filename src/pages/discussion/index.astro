@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../data/site';
+---
+
+<BaseLayout title={`討論區 — ${SITE.name}`}>
+  <div style="max-width:52rem; margin:0 auto; padding:3rem 1.5rem 5rem;">
+
+    <header style="border-bottom:1px solid var(--border); padding-bottom:1.5rem; margin-bottom:2.5rem;">
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--ink); margin:0 0 .5rem;">
+        討論區
+      </h1>
+      <p style="color:var(--muted); font-size:.9rem; margin:0;">
+        使用 GitHub 帳號留言 · 歡迎分享你的觀察與想法
+      </p>
+    </header>
+
+    <!-- Giscus 討論組件 -->
+    <!-- 設定說明：前往 https://giscus.app/ 填入你的 repo，取得以下參數後替換 -->
+    <div id="giscus-container">
+      <script
+        src="https://giscus.app/client.js"
+        data-repo="YOUR_USERNAME/augmented-thinking"
+        data-repo-id="YOUR_REPO_ID"
+        data-category="General"
+        data-category-id="YOUR_CATEGORY_ID"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang="zh-TW"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async
+      ></script>
+    </div>
+
+    <!-- 未設定提示 -->
+    <noscript>
+      <div style="background:var(--mist); border:1px solid var(--border); padding:2rem; text-align:center; color:var(--muted); font-size:.88rem;">
+        <p>討論區需要啟用 JavaScript 才能載入。</p>
+        <p>設定步驟：前往 <a href="https://giscus.app" target="_blank" style="color:var(--gold);">giscus.app</a>，填入你的 GitHub repo 資訊，取得設定碼後更新 <code>src/pages/discussion/index.astro</code>。</p>
+      </div>
+    </noscript>
+
+  </div>
+</BaseLayout>
