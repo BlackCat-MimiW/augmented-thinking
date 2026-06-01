@@ -12,13 +12,15 @@ export const SITE = {
 
 // ─── 分類設定（新增/刪除/改名只需改這裡）───
 export const CATEGORIES: Category[] = [
-  { slug: 'ai-tools',       label: 'AI工具',   color: '#1a1a2e' },
-  { slug: 'prompt',         label: 'Prompt設計', color: '#1a3a2e' },
-  { slug: 'business',       label: '商業思維', color: '#2e1a1a' },
-  { slug: 'society',        label: '社會觀察', color: '#1a2a3e' },
-  { slug: 'investment',     label: '投資理財', color: '#2e2a1a' },
-  { slug: 'blog',           label: 'Blog',      color: '#2a1a3e' },
-  { slug: 'discussion',     label: '討論區',   color: '#1a3a3a' },
+  { slug: 'ai-tools',    label: 'AI工具',   color: '#1a1a2e' },
+  { slug: 'business',    label: '商業思維', color: '#2e1a1a' },
+  { slug: 'society',     label: '社會觀察', color: '#1a2a3e' },
+  { slug: 'investment',  label: '投資理財', color: '#2e2a1a' },
+  { slug: 'education',   label: '教育觀點', color: '#1a3a2e' },
+  { slug: 'economy',     label: '經濟議題', color: '#2a2e1a' },
+  { slug: 'humanity',    label: '人文關懷', color: '#3a1a2e' },
+  { slug: 'blog',        label: 'Blog',     color: '#2a1a3e' },
+  { slug: 'discussion',  label: '討論區',   color: '#1a3a3a' },
 ];
 
 // ─── 社群連結（填入你的實際網址）───

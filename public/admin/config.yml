@@ -20,12 +20,14 @@ collections:
       - label: 分類
         name: category
         widget: select
-        options:
+options:
           - { label: AI工具, value: ai-tools }
-          - { label: Prompt設計, value: prompt }
           - { label: 商業思維, value: business }
           - { label: 社會觀察, value: society }
           - { label: 投資理財, value: investment }
+          - { label: 教育觀點, value: education }
+          - { label: 經濟議題, value: economy }
+          - { label: 人文關懷, value: humanity }
           - { label: Blog, value: blog }
           - { label: 討論區, value: discussion }
       - { label: 發布日期, name: pubDate, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
