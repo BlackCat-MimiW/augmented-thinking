@@ -34,7 +34,7 @@ export const SOCIAL = [
 export const SUBSCRIBE_FORM_URL = 'https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?embedded=true';
 
 // ─── Google Analytics（填入你的 GA4 Measurement ID）───
-export const GA_ID = 'G-XXXXXXXXXX';
+export const GA_ID = 'G-E8G3NZ8E8W';
 
 // Types
 export interface Category { slug: string; label: string; color: string; }
