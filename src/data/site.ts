@@ -7,7 +7,7 @@ export const SITE = {
   tagline: '關於 AI、商業、家庭教育與下一代思維養成的觀察筆記。',
   description: '關於 AI、商業、家庭教育與下一代思維養成的觀察筆記。我關心的不只是 AI 能做什麼，而是它將如何改變下一代成為什麼樣的人。',
   base: '',
-  url: 'https://tourmaline-cucurucho-1e33df.netlify.app',
+  url: 'https://augmented-thinking.pages.dev',
 };
 
 // ─── 分類設定（新增/刪除/改名只需改這裡）───
