@@ -2,7 +2,6 @@ backend:
   name: git-gateway
   branch: main
 
-
 media_folder: public/images
 public_folder: /images
 
@@ -15,28 +14,64 @@ collections:
     extension: mdx
     format: frontmatter
     fields:
-      - { label: 標題, name: title, widget: string }
-      - { label: 描述, name: description, widget: string, required: false }
+      - label: 標題
+        name: title
+        widget: string
+      - label: 描述
+        name: description
+        widget: string
+        required: false
       - label: 分類
         name: category
         widget: select
-options:
-          - { label: AI工具, value: ai-tools }
-          - { label: 商業思維, value: business }
-          - { label: 社會觀察, value: society }
-          - { label: 投資理財, value: investment }
-          - { label: 教育觀點, value: education }
-          - { label: 經濟議題, value: economy }
-          - { label: 人文關懷, value: humanity }
-          - { label: Blog, value: blog }
-          - { label: 討論區, value: discussion }
-      - { label: 發布日期, name: pubDate, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
-      - { label: 標籤, name: tags, widget: list, default: [] }
-      - { label: 封面圖片, name: image, widget: image, required: false }
-      - { label: 閱讀時間（分鐘）, name: minutesRead, widget: number, default: 5 }
-      - { label: 精選文章, name: featured, widget: boolean, default: false }
-      - { label: 草稿, name: draft, widget: boolean, default: false }
-      - { label: 內文, name: body, widget: markdown }
+        options:
+          - label: AI工具
+            value: ai-tools
+          - label: 商業思維
+            value: business
+          - label: 社會觀察
+            value: society
+          - label: 投資理財
+            value: investment
+          - label: 教育觀點
+            value: education
+          - label: 經濟議題
+            value: economy
+          - label: 人文關懷
+            value: humanity
+          - label: Blog
+            value: blog
+          - label: 討論區
+            value: discussion
+      - label: 發布日期
+        name: pubDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - label: 標籤
+        name: tags
+        widget: list
+        default: []
+      - label: 封面圖片
+        name: image
+        widget: image
+        required: false
+      - label: 閱讀時間（分鐘）
+        name: minutesRead
+        widget: number
+        default: 5
+      - label: 精選文章
+        name: featured
+        widget: boolean
+        default: false
+      - label: 草稿
+        name: draft
+        widget: boolean
+        default: false
+      - label: 內文
+        name: body
+        widget: markdown
 
   - name: settings
     label: 網站設定
@@ -45,8 +80,18 @@ options:
         name: social
         file: src/data/social.json
         fields:
-          - { label: LinkedIn 網址, name: linkedin, widget: string }
-          - { label: Instagram 網址, name: instagram, widget: string }
-          - { label: Facebook 網址, name: facebook, widget: string }
-          - { label: YouTube 網址, name: youtube, widget: string }
-          - { label: Threads 網址, name: threads, widget: string }
+          - label: LinkedIn 網址
+            name: linkedin
+            widget: string
+          - label: Instagram 網址
+            name: instagram
+            widget: string
+          - label: Facebook 網址
+            name: facebook
+            widget: string
+          - label: YouTube 網址
+            name: youtube
+            widget: string
+          - label: Threads 網址
+            name: threads
+            widget: string
