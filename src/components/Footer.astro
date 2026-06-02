@@ -21,8 +21,11 @@ const icons: Record<string,string> = {
       <div style="font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; color:#fff; margin-bottom:0.75rem;">
         {SITE.name}
       </div>
-      <p style="font-size:0.85rem; line-height:1.7; max-width:28rem; margin:0 0 1.5rem; opacity:0.7;">
-        {SITE.description}
+      <p style="font-size:0.85rem; line-height:1.8; max-width:28rem; margin:0 0 0.5rem; opacity:0.8;">
+        關於 AI、商業、家庭教育與下一代思維養成的觀察筆記。
+      </p>
+      <p style="font-size:0.82rem; line-height:1.7; max-width:28rem; margin:0 0 1.5rem; opacity:0.6; font-style:italic;">
+        我關心的不只是 AI 能做什麼，而是它將如何改變下一代成為什麼樣的人。
       </p>
       <!-- 社群圖示 -->
       <div style="display:flex; gap:14px;">
@@ -62,7 +65,6 @@ const icons: Record<string,string> = {
         { label:'關於作者',  href:`${SITE.base}/about/` },
         { label:'訂閱 RSS', href:`${SITE.base}/subscribe/` },
         { label:'RSS Feed', href:`${SITE.base}/rss.xml` },
-        { label:'後台管理', href:`${SITE.base}/admin/` },
       ].map(l => (
         <a href={l.href}
           style="display:block; font-size:0.85rem; padding:4px 0; color:#b0aba3; transition:color .15s;"

@@ -4,8 +4,8 @@
 
 export const SITE = {
   name: 'Augmented Thinking',
-  tagline: 'AI 工具自學與觀察筆記（2026版）',
-  description: '用清晰的語言拆解 AI 工具、商業思維與社會觀察。台灣觀點，2026。',
+  tagline: '關於 AI、商業、家庭教育與下一代思維養成的觀察筆記。',
+  description: '關於 AI、商業、家庭教育與下一代思維養成的觀察筆記。我關心的不只是 AI 能做什麼，而是它將如何改變下一代成為什麼樣的人。',
   base: '',
   url: 'https://tourmaline-cucurucho-1e33df.netlify.app',
 };
@@ -17,7 +17,7 @@ export const CATEGORIES: Category[] = [
   { slug: 'society',     label: '社會觀察', color: '#1a2a3e' },
   { slug: 'investment',  label: '投資理財', color: '#2e2a1a' },
   { slug: 'education',   label: '教育觀點', color: '#1a3a2e' },
-  { slug: 'economy',     label: '經濟議題', color: '#2a2e1a' },
+  { slug: 'economy',     label: '金融經濟', color: '#2a2e1a' },
   { slug: 'humanity',    label: '人文關懷', color: '#3a1a2e' },
   { slug: 'blog',        label: 'Blog',     color: '#2a1a3e' },
   { slug: 'discussion',  label: '討論區',   color: '#1a3a3a' },
