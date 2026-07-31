@@ -1,6 +1,5 @@
 backend:
-  name: github
-  repo: BlackCat-MimiW/augmented-thinking
+  name: git-gateway
   branch: main
 
 
@@ -74,6 +73,53 @@ collections:
       - label: 內文
         name: body
         widget: markdown
+
+  - name: appearance
+    label: 外觀設定
+    files:
+      - label: 主題（字體 / 字級 / 顏色）
+        name: theme
+        file: src/data/theme.json
+        fields:
+          - label: 內文字體
+            name: bodyFont
+            widget: select
+            default: Inter
+            options:
+              - Inter
+              - Noto Sans TC
+              - Lora
+              - Merriweather
+              - Nunito Sans
+          - label: 標題字體
+            name: headingFont
+            widget: select
+            default: Playfair Display
+            options:
+              - Playfair Display
+              - Noto Serif TC
+              - Source Serif 4
+              - Lora
+              - Merriweather
+          - label: 基準字級（px，全站等比縮放）
+            name: baseFontSize
+            widget: number
+            default: 16
+            value_type: int
+            min: 12
+            max: 22
+          - label: 顏色
+            name: colors
+            widget: object
+            fields:
+              - { label: 主標題色, name: ink, widget: color }
+              - { label: 內文色, name: text, widget: color }
+              - { label: 次要文字色, name: muted, widget: color }
+              - { label: 重點色（金）, name: gold, widget: color }
+              - { label: 強調色, name: accent, widget: color }
+              - { label: 淺底色, name: mist, widget: color }
+              - { label: 邊框色, name: border, widget: color }
+              - { label: 背景色, name: background, widget: color }
 
   - name: settings
     label: 網站設定
