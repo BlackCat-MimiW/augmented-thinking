@@ -26,9 +26,9 @@ const byCat = (slug: string) => sorted.filter(a => a.data.category === slug).sli
 
           <!-- 大圖主文章 -->
           <a href={`${SITE.base}/${hero.data.category}/${hero.slug}/`} class="card-hover" style="display:block;">
-            <div style="aspect-ratio:16/9; overflow:hidden; margin-bottom:1rem; background:var(--mist);">
+            <div style="aspect-ratio:4/3; overflow:hidden; margin-bottom:1rem; background:var(--mist);">
               {hero.data.image
-                ? <img src={hero.data.image} alt={hero.data.title} style="width:100%;height:100%;object-fit:cover;" />
+                ? <img src={hero.data.image} alt={hero.data.title} style="width:100%;height:100%;object-fit:contain;" />
                 : <div class="img-placeholder"></div>
               }
             </div>
