@@ -1,0 +1,51 @@
+---
+// 讀取後台可編輯的設計 token（src/data/theme.json），
+// 動態載入字體並以 CSS 變數注入全站。放在 <head> 內即可。
+import theme from '../data/theme.json';
+
+// 各字體在 Google Fonts 上「確定存在」的字重
+// （避免請求不存在的字重，導致整批字體載入失敗 400）
+const FONT_WEIGHTS: Record<string, string> = {
+  'Inter': '300;400;500;600;700',
+  'Playfair Display': '400;600;700',
+  'Noto Sans TC': '400;500;700',
+  'Noto Serif TC': '400;600;700',
+  'Lora': '400;500;600;700',
+  'Merriweather': '400;700',
+  'Source Serif 4': '400;600;700',
+  'Nunito Sans': '400;600;700',
+};
+
+const bodyFont    = theme.bodyFont    || 'Inter';
+const headingFont = theme.headingFont || 'Playfair Display';
+const baseSize    = theme.baseFontSize || 16;
+const c           = theme.colors || ({} as Record<string, string>);
+
+// 需要載入的字體（去重）＋ 內文等寬字
+const wanted = [...new Set([bodyFont, headingFont, 'JetBrains Mono'])];
+const families = wanted
+  .map((f) => `family=${f.replace(/ /g, '+')}:wght@${FONT_WEIGHTS[f] || '400;700'}`)
+  .join('&');
+const fontHref = `https://fonts.googleapis.com/css2?${families}&display=swap`;
+
+// html:root 提高權重，確保覆蓋 global.css 的預設值（不受載入順序影響）
+const rootCss = `html:root{
+  --ink:${c.ink || '#0f0f0f'};
+  --text:${c.text || '#2d2d2d'};
+  --muted:${c.muted || '#6b6560'};
+  --gold:${c.gold || '#b8860b'};
+  --accent:${c.accent || '#1a1a2e'};
+  --mist:${c.mist || '#f7f6f3'};
+  --border:${c.border || '#e5e2db'};
+  --white:#ffffff;
+  --bg:${c.background || '#ffffff'};
+  --font-body:'${bodyFont}',system-ui,sans-serif;
+  --font-heading:'${headingFont}',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+  font-size:${baseSize}px;
+}`;
+---
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href={fontHref} />
+<style is:global set:html={rootCss}></style>
