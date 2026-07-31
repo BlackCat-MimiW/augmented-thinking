@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: BlackCat-MimiW/augmented-thinking
   branch: main
 
 
