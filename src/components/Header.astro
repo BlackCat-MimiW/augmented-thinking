@@ -9,12 +9,12 @@ const path = Astro.url.pathname;
 
     <!-- Logo 行 -->
     <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 0 0.75rem; border-bottom:1px solid var(--border);">
-      <a href={`${SITE.base}/`} style="font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:var(--ink); letter-spacing:-0.5px;">
+      <a href={`${SITE.base}/`} style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--ink); letter-spacing:-0.5px;">
         {SITE.name}
       </a>
       <div style="display:flex; align-items:center; gap:12px;">
         <a href={`${SITE.base}/subscribe/`}
-          style="font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:500; border:1px solid var(--ink); padding:5px 14px; color:var(--ink); transition:all .15s;"
+          style="ont-family:var(--font-body); font-size:0.78rem; font-weight:500; border:1px solid var(--ink); padding:5px 14px; color:var(--ink); transition:all .15s;"
           onmouseover="this.style.background='var(--ink)';this.style.color='#fff'"
           onmouseout="this.style.background='transparent';this.style.color='var(--ink)'">
           訂閱 RSS
