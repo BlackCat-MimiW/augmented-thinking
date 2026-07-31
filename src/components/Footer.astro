@@ -18,7 +18,7 @@ const icons: Record<string,string> = {
 
     <!-- 品牌 -->
     <div>
-      <div style="font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; color:#fff; margin-bottom:0.75rem;">
+      <div style="font-family:var(--font-heading); font-size:1.3rem; font-weight:700; color:#fff; margin-bottom:0.75rem;">
         {SITE.name}
       </div>
       <p style="font-size:0.85rem; line-height:1.8; max-width:28rem; margin:0 0 0.5rem; opacity:0.8;">
@@ -43,7 +43,7 @@ const icons: Record<string,string> = {
 
     <!-- 分類 -->
     <div>
-      <div style="font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#fff; margin-bottom:1rem;">
+      <div style="font-family:var(--font-body); font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#fff; margin-bottom:1rem;">
         分類
       </div>
       {CATEGORIES.map(cat => (
